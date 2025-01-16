@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import { describe, beforeEach, it, expect } from '@jest/globals'
 import ModalShareContent from './ModalShareContent.vue';
 
 describe('ModalShareContet', () => {

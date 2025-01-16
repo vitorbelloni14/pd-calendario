@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import { describe, beforeEach, it, expect } from '@jest/globals'
 import ModalDetails from './ModalDetails.vue';
 
 describe('ModalDetails', () => {

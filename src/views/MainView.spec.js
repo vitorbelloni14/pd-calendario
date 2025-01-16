@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
+import { describe, beforeEach, it, expect } from '@jest/globals'
 import MainView from './MainView.vue';
 import Calendar from '../components/Calendar/Calendar.vue';
-import ModalShareCalendar from '../components/ModalShareCalendar/ModalShareCalendar.vue';
 
 describe('MainView', () => {
   

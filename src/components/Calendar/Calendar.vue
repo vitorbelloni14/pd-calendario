@@ -118,7 +118,8 @@
     import meusConcursos from '../../../meus_concursos.json';
 
     export default {
-        name: 'pd-calendar',
+        // eslint-disable-next-line vue/multi-word-component-names
+        name: 'Calendar',
         components: {
             ModalDetails,
             ModalShareContent,
