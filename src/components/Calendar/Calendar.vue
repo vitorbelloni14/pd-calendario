@@ -110,144 +110,142 @@
 
 
 <script>
-import ModalDetails from './components/ModalDetails/ModalDetails.vue';
-import ModalShareContent from './components/ModalShareContent/ModalShareContent.vue';
-import ModalAddEvent from './components/ModalAddEvent/ModalAddEvent.vue';
-import { months } from '@/assets/months';
-import concursos from '../../../concursos.json'
-import meusConcursos from '../../../meus_concursos.json';
+    import ModalDetails from './components/ModalDetails/ModalDetails.vue';
+    import ModalShareContent from './components/ModalShareContent/ModalShareContent.vue';
+    import ModalAddEvent from './components/ModalAddEvent/ModalAddEvent.vue';
+    import { months } from '@/assets/months';
+    import concursos from '../../../concursos.json'
+    import meusConcursos from '../../../meus_concursos.json';
 
-export default {
-    name: 'pd-calendar',
-    components: {
-        ModalDetails,
-        ModalShareContent,
-        ModalAddEvent
-    },
-    props: {
-        activeTab: {
-            type: String,
-            required: true,
+    export default {
+        name: 'pd-calendar',
+        components: {
+            ModalDetails,
+            ModalShareContent,
+            ModalAddEvent
         },
-    },
-    data: () => ({
-        focus: '',
-        type: 'month',
-        typeToLabel: {
-            month: 'Mês',
-            week: 'Semana',
-            day: 'Dia',
+        props: {
+            activeTab: {
+                type: String,
+                required: true,
+            },
         },
-        start: null,
-        end: null,
-        selectedEvent: {},
-        selectedElement: null,
-        selectedOpen: false,
-        selectedDate: null,
-        modalType: null,
-        modalVisible: false,
-        modalAddEvent: false,
-        events: [],
-        dailyFirstInterval: 8,
-    }),
-    computed: {
-        title() {
-            const { start, end } = this
-            if (!start || !end) {
+        data: () => ({
+            focus: '',
+            type: 'month',
+            typeToLabel: {
+                month: 'Mês',
+                week: 'Semana',
+                day: 'Dia',
+            },
+            start: null,
+            end: null,
+            selectedEvent: {},
+            selectedElement: null,
+            selectedOpen: false,
+            selectedDate: null,
+            modalType: null,
+            modalVisible: false,
+            modalAddEvent: false,
+            events: [],
+            dailyFirstInterval: 8,
+        }),
+        computed: {
+            title() {
+                const { start, end } = this
+                if (!start || !end) {
+                    return ''
+                }
+
+                const startMonth = this.monthFormatter(start)
+                const endMonth = this.monthFormatter(end)
+                const suffixMonth = startMonth === endMonth ? startMonth : endMonth
+
+                const startYear = start.year
+                const endYear = end.year
+                const suffixYear = startYear === endYear ? startYear : endYear
+
+                const startDay = start.day 
+                const endDay = end.day
+
+                switch (this.type) {
+                    case 'month':
+                        return `${months[startMonth]} ${startYear}`
+                    case 'week':
+                        return `${startDay} ${months[startMonth]} ${startYear} - ${endDay} ${months[suffixMonth]} ${suffixYear}`
+                    case 'day':
+                        return `${startDay} ${months[startMonth]} ${startYear}`
+                }
                 return ''
-            }
+            },
+            monthFormatter() {
+                return this.$refs.calendar.getFormatter({
+                    timeZone: 'UTC', month: 'long',
+                })
+            },
+        },
+        mounted() {
+            let tipoConcurso = this.activeTab === "todas" ? concursos : meusConcursos;
 
-            const startMonth = this.monthFormatter(start)
-            const endMonth = this.monthFormatter(end)
-            const suffixMonth = startMonth === endMonth ? startMonth : endMonth
+            this.events = tipoConcurso.map(event => ({
+                name: event.name,
+                start: event.start,
+                color: event.color,
+                link: event.link,
+            }));
+        },
+        methods: {
+            viewDay({ date, weekday }) {
+                if (weekday === 0 || weekday === 6) {
+                    this.dailyFirstInterval = 11
+                }
+                this.focus = date
+                this.type = 'day'
+            },
+            getEventColor(event) {
+                return event.color
+            },
+            setToday() {
+                this.focus = this.today
+            },
+            prev() {
+                this.$refs.calendar.prev()
+            },
+            next() {
+                this.$refs.calendar.next()
+            },
+            showEvent({ nativeEvent, event }) {
+                this.selectedEvent = event;
+                this.modalVisible = true;
 
-            const startYear = start.year
-            const endYear = end.year
-            const suffixYear = startYear === endYear ? startYear : endYear
-
-            const startDay = start.day 
-            const endDay = end.day
-
-            switch (this.type) {
-                case 'month':
-                    return `${months[startMonth]} ${startYear}`
-                case 'week':
-                    return `${startDay} ${months[startMonth]} ${startYear} - ${endDay} ${months[suffixMonth]} ${suffixYear}`
-                case 'day':
-                    return `${startDay} ${months[startMonth]} ${startYear}`
-            }
-            return ''
+                if (this.activeTab === 'todas') {
+                    this.modalType = 'details';
+                } else {
+                    this.modalType = 'share';
+                }
+                nativeEvent.stopPropagation();
+            },
+            showAddEvent() {
+                console.log('aqui')
+                console.log('addEvent antes abrir', this.modalAddEvent);
+                this.modalAddEvent = true;
+                console.log('addEvent depois abrir', this.modalAddEvent);
+            },
+            closeAddEvent() {
+                console.log('aqui')
+                console.log('addEvent antes fechar', this.modalAddEvent);
+                this.modalAddEvent = false;
+                console.log('addEvent depois fechar', this.modalAddEvent);
+            },
+            closeDialog() {
+                this.modalVisible = false;
+            },
+            changeMonth({ start, end }) {
+                this.start = start;
+                this.end = end;
+            },
         },
-        monthFormatter() {
-            return this.$refs.calendar.getFormatter({
-                timeZone: 'UTC', month: 'long',
-            })
-        },
-    },
-    mounted() {
-        this.$refs.calendar.checkChange();
-
-        let tipoConcurso = this.activeTab === "todas" ? concursos : meusConcursos;
-
-        this.events = tipoConcurso.map(event => ({
-            name: event.name,
-            start: event.start,
-            color: event.color,
-            link: event.link,
-        }));
-    },
-    methods: {
-        viewDay({ date, weekday }) {
-            if (weekday === 0 || weekday === 6) {
-                this.dailyFirstInterval = 11
-            }
-            this.focus = date
-            this.type = 'day'
-        },
-        getEventColor(event) {
-            return event.color
-        },
-        setToday() {
-            this.focus = this.today
-        },
-        prev() {
-            this.$refs.calendar.prev()
-        },
-        next() {
-            this.$refs.calendar.next()
-        },
-        showEvent({ nativeEvent, event }) {
-            this.selectedEvent = event;
-            this.modalVisible = true;
-
-            if (this.activeTab === 'todas') {
-                this.modalType = 'details';
-            } else {
-                this.modalType = 'share';
-            }
-            nativeEvent.stopPropagation();
-        },
-        showAddEvent() {
-            console.log('aqui')
-            console.log('addEvent antes abrir', this.modalAddEvent);
-            this.modalAddEvent = true;
-            console.log('addEvent depois abrir', this.modalAddEvent);
-        },
-        closeAddEvent() {
-            console.log('aqui')
-            console.log('addEvent antes fechar', this.modalAddEvent);
-            this.modalAddEvent = false;
-            console.log('addEvent depois fechar', this.modalAddEvent);
-        },
-        closeDialog() {
-            this.modalVisible = false;
-        },
-        changeMonth({ start, end }) {
-            this.start = start;
-            this.end = end;
-        },
-    },
-}
+    }
 </script>
 
 <style lang="scss" scoped>

@@ -53,47 +53,43 @@
 </template>
 
 <script>
-export default {
-    name: 'ModalDetails',
-    props: {
-        modalVisible: Boolean,
-        selectedEvent: Object,
-    },
-    data() {
-        return {
-            localModalVisible: this.modalVisible,
-            snackbarVisible: false
-        };
-    },
-    watch: {
-        modalVisible(newValue) {
-            this.localModalVisible = newValue;
+    export default {
+        name: 'ModalDetails',
+        props: {
+            modalVisible: Boolean,
+            selectedEvent: Object,
         },
-        localModalVisible(newValue) {
-            if (!newValue) {
-                this.$emit('closeModal');
+        data() {
+            return {
+                localModalVisible: this.modalVisible,
+                snackbarVisible: false
+            };
+        },
+        watch: {
+            modalVisible(newValue) {
+                this.localModalVisible = newValue;
+            },
+            localModalVisible(newValue) {
+                if (!newValue) {
+                    this.$emit('closeModal');
+                }
+            },
+        },
+        methods: {
+            closeModal() {
+                this.localModalVisible = false;
+            },
+            formatDate(date) {
+                const [year, month, day] = date.split('-');  
+                return `${day}/${month}/${year.slice(2)}`; 
+            },
+            addToMyCalendar() {
+                this.snackbarVisible = true;
+                this.localModalVisible = false;
             }
+    
         },
-    },
-    methods: {
-        closeModal() {
-            this.localModalVisible = false;
-        },
-        formatDate(date) {
-            const d = new Date(date);
-            const day = String(d.getDate()).padStart(2, '0');
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const year = String(d.getFullYear()).slice(2);
-            
-            return `${day}/${month}/${year}`;
-        },
-        addToMyCalendar() {
-            this.snackbarVisible = true;
-            this.localModalVisible = false;
-        }
- 
-    },
-}
+    }
 </script>
 
 <style lang="scss" scoped> 
