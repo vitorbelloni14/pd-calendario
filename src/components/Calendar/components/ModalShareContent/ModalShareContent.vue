@@ -5,7 +5,7 @@
                 <div class="modal-header-content">
                     <h1>{{ selectedEvent.name }}</h1>
                     <span>
-                        {{ formatDate(selectedEvent.start) }} | <a href="passeidireto.com">Ler Edital</a>
+                        {{ formatDate(selectedEvent.start) }} | <a :href="selectedEvent.link">Ler Edital</a>
                     </span>
                     <div class="reminder">
                         <img src="./assets/bell.svg" alt="bell"/>

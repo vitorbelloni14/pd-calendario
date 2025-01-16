@@ -6,7 +6,7 @@
                     <div class="modal-header-content">
                         <h1>{{ selectedEvent.name }}</h1>
                         <span>
-                            {{ formatDate(selectedEvent.start) }} | <a href="passeidireto.com">Ler Edital</a>
+                            {{ formatDate(selectedEvent.start) }} | <a :href="selectedEvent.link">Ler Edital</a>
                         </span>
                     </div>
                     <v-btn
@@ -47,7 +47,7 @@
 
         <v-snackbar v-model="snackbarVisible" color="success" timeout="3000" bottom center>
             <v-icon left>mdi-check</v-icon>
-            Evento adicionado ao calendário!
+            Evento adicionado ao "Meu Calendário".
         </v-snackbar>
     </div>
 </template>
@@ -82,12 +82,10 @@ export default {
         formatDate(date) {
             const d = new Date(date);
             const day = String(d.getDate()).padStart(2, '0');
-            const month = String(d.getMonth() + 1).padStart(2, '0'); // Meses começam do 0
-            const year = String(d.getFullYear()).slice(2); // Pega os dois últimos dígitos do ano
-            const hours = String(d.getHours()).padStart(2, '0');
-            const minutes = String(d.getMinutes()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = String(d.getFullYear()).slice(2);
             
-            return `${day}/${month}/${year} - ${hours}:${minutes}`;
+            return `${day}/${month}/${year}`;
         },
         addToMyCalendar() {
             this.snackbarVisible = true;

@@ -12,10 +12,9 @@
                             <v-btn fab text small color="grey darken-2" @click="next">
                                 <v-icon small>mdi-chevron-right</v-icon>
                             </v-btn>
-                            <v-spacer></v-spacer>
                             <v-menu bottom right>
                                 <template v-slot:activator="{ on }">
-                                    <v-btn outlined color="grey darken-2" v-on="on">
+                                    <v-btn class="custom-transparent-btn" v-on="on">
                                         <span>{{ typeToLabel[type] }}</span>
                                         <v-icon right>mdi-menu-down</v-icon>
                                     </v-btn>
@@ -32,13 +31,18 @@
                                     </v-list-item>
                                 </v-list>
                             </v-menu>
+                            <v-spacer></v-spacer>
+                            <button class="add-button" @click="showAddEvent">
+                                <v-icon left>mdi-plus</v-icon>
+                                <span>Adicionar</span>
+                            </button>
                         </v-toolbar>
                     </v-sheet>
                     <v-sheet height="600">
                         <v-calendar ref="calendar" v-model="focus" color="primary" :events="events"
                             :event-color="getEventColor" :first-interval="dailyFirstInterval" :type="type"
                             @click:event="showEvent" @click:more="viewDay" @click:date="viewDay"
-                            @change="updateRange"></v-calendar>
+                            @change="changeMonth"></v-calendar>
                         <v-menu v-model="selectedOpen" :close-on-content-click="false" :activator="selectedElement"
                             offset-x>
                             <v-card color="grey lighten-4" min-width="350px" flat>
@@ -66,10 +70,21 @@
                             </v-card>
                         </v-menu>
                     </v-sheet>
-                    <modal-share-content 
+                    <modal-details 
+                        v-if="modalType === 'details'"
                         :modalVisible="modalVisible"
                         :selectedEvent="selectedEvent"
                         @closeModal="closeDialog" 
+                        />
+                    <modal-share-content
+                        v-if="modalType === 'share'"
+                        :modalVisible="modalVisible"
+                        :selectedEvent="selectedEvent"
+                        @closeModal="closeDialog" 
+                    />
+                    <modal-add-event
+                        :modalVisible="modalAddEvent"
+                        @closeModal="closeAddEvent" 
                     />
                 </v-col>
             </v-row>
@@ -79,15 +94,24 @@
 
 
 <script>
-//import ModalDetails from './components/ModalDetails/ModalDetails.vue';
+import ModalDetails from './components/ModalDetails/ModalDetails.vue';
 import ModalShareContent from './components/ModalShareContent/ModalShareContent.vue';
+import ModalAddEvent from './components/ModalAddEvent/ModalAddEvent.vue';
 import { months } from '@/assets/months';
+import concursos from '../../../concursos.json'
 
 export default {
     name: 'pd-calendar',
     components: {
-        //ModalDetails,
-        ModalShareContent
+        ModalDetails,
+        ModalShareContent,
+        ModalAddEvent
+    },
+    props: {
+        activeTab: {
+            type: String,
+            required: true,
+        },
     },
     data: () => ({
         focus: '',
@@ -102,10 +126,10 @@ export default {
         selectedEvent: {},
         selectedElement: null,
         selectedOpen: false,
+        modalType: null,
         modalVisible: false,
+        modalAddEvent: false,
         events: [],
-        colors: ['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1'],
-        names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
         dailyFirstInterval: 8,
     }),
     computed: {
@@ -143,7 +167,14 @@ export default {
         },
     },
     mounted() {
-        this.$refs.calendar.checkChange()
+        this.$refs.calendar.checkChange();
+
+        this.events = concursos.map(event => ({
+            name: event.name,
+            start: event.start,
+            color: event.color,
+            link: event.link,
+        }));
     },
     methods: {
         viewDay({ date, weekday }) {
@@ -169,46 +200,31 @@ export default {
             this.selectedEvent = event;
             this.modalVisible = true;
 
-            nativeEvent.stopPropagation()
+            if (this.activeTab === 'todas') {
+                this.modalType = 'details';
+            } else {
+                this.modalType = 'share';
+            }
+            nativeEvent.stopPropagation();
+        },
+        showAddEvent() {
+            console.log('aqui')
+            console.log('addEvent antes abrir', this.modalAddEvent);
+            this.modalAddEvent = true;
+            console.log('addEvent depois abrir', this.modalAddEvent);
+        },
+        closeAddEvent() {
+            console.log('aqui')
+            console.log('addEvent antes fechar', this.modalAddEvent);
+            this.modalAddEvent = false;
+            console.log('addEvent depois fechar', this.modalAddEvent);
         },
         closeDialog() {
             this.modalVisible = false;
         },
-        updateRange({ start, end }) {
-            const events = []
-
-            const min = new Date(`${start.date}T00:00:00`)
-            const max = new Date(`${end.date}T23:59:59`)
-            const days = (max.getTime() - min.getTime()) / 86400000
-            const eventCount = this.rnd(days, days + 20)
-
-            for (let i = 0; i < eventCount; i++) {
-                const allDay = this.rnd(0, 3) === 0
-                const firstTimestamp = this.rnd(min.getTime(), max.getTime())
-                const first = new Date(firstTimestamp - (firstTimestamp % 900000))
-                const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000
-                const second = new Date(first.getTime() + secondTimestamp)
-
-                events.push({
-                    name: this.names[this.rnd(0, this.names.length - 1)],
-                    start: this.formatDate(first, !allDay),
-                    end: this.formatDate(second, !allDay),
-                    color: this.colors[this.rnd(0, this.colors.length - 1)],
-                })
-            }
-
-            this.start = start
-            this.end = end
-            this.events = events
-            console.log("events", this.events);
-        },
-        rnd(a, b) {
-            return Math.floor((b - a + 1) * Math.random()) + a
-        },
-        formatDate(a, withTime) {
-            return withTime
-                ? `${a.getFullYear()}-${a.getMonth() + 1}-${a.getDate()} ${a.getHours()}:${a.getMinutes()}`
-                : `${a.getFullYear()}-${a.getMonth() + 1}-${a.getDate()}`
+        changeMonth({ start, end }) {
+            this.start = start;
+            this.end = end;
         },
     },
 }
@@ -217,6 +233,53 @@ export default {
 <style lang="scss" scoped>
     .calendar-conatainer {
         display: flex;
+    }
+
+    .custom-transparent-btn {
+        background: transparent;
+        color: inherit;
+        border: none;
+        position: relative;
+        padding-bottom: 5px;
+        box-shadow: none !important;
+        background-color: #FFFFFF !important;
+    }
+
+    .custom-transparent-btn::after {
+        content: '';
+        display: block;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #B9BBC3;
+        transition: background-color 0.3s ease;
+    }
+
+    .add-button {
+        display: flex;
+        padding: 8px 20px;
+        justify-content: center;
+        align-items: center;
+        border-radius: 12px;
+        border: 2px solid #F55B1F;
+        background: #FFF;
+        box-shadow: 0px 1px 4px 0px rgba(65, 64, 66, 0.25);
+
+        .v-icon {
+            color: #F55B1F;
+        }
+
+        span {
+            color: #F55B1F;
+            color: var(--color-extended-brand-primary-main, #F55B1F);
+            font-family: Poppins;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: normal;
+        }
     }
 </style>
   
