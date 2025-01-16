@@ -1,5 +1,5 @@
 <template>
-    <div id="app">
+    <div class="calendar-container">
         <v-app>
             <v-row class="fill-height mx-0">
                 <v-col>
@@ -22,16 +22,13 @@
                                 </template>
                                 <v-list>
                                     <v-list-item @click="type = 'day'">
-                                        <v-list-item-title>Day</v-list-item-title>
+                                        <v-list-item-title>Dia</v-list-item-title>
                                     </v-list-item>
                                     <v-list-item @click="type = 'week'">
-                                        <v-list-item-title>Week</v-list-item-title>
+                                        <v-list-item-title>Semana</v-list-item-title>
                                     </v-list-item>
                                     <v-list-item @click="type = 'month'">
-                                        <v-list-item-title>Month</v-list-item-title>
-                                    </v-list-item>
-                                    <v-list-item @click="type = '4day'">
-                                        <v-list-item-title>4 days</v-list-item-title>
+                                        <v-list-item-title>Mês</v-list-item-title>
                                     </v-list-item>
                                 </v-list>
                             </v-menu>
@@ -69,6 +66,11 @@
                             </v-card>
                         </v-menu>
                     </v-sheet>
+                    <modal-share-content 
+                        :modalVisible="modalVisible"
+                        :selectedEvent="selectedEvent"
+                        @closeModal="closeDialog" 
+                    />
                 </v-col>
             </v-row>
         </v-app>
@@ -77,22 +79,30 @@
 
 
 <script>
+//import ModalDetails from './components/ModalDetails/ModalDetails.vue';
+import ModalShareContent from './components/ModalShareContent/ModalShareContent.vue';
+import { months } from '@/assets/months';
+
 export default {
     name: 'pd-calendar',
+    components: {
+        //ModalDetails,
+        ModalShareContent
+    },
     data: () => ({
         focus: '',
         type: 'month',
         typeToLabel: {
-            month: 'Month',
-            week: 'Week',
-            day: 'Day',
-            '4day': '4 Days',
+            month: 'Mês',
+            week: 'Semana',
+            day: 'Dia',
         },
         start: null,
         end: null,
         selectedEvent: {},
         selectedElement: null,
         selectedOpen: false,
+        modalVisible: false,
         events: [],
         colors: ['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1'],
         names: ['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'],
@@ -107,23 +117,22 @@ export default {
 
             const startMonth = this.monthFormatter(start)
             const endMonth = this.monthFormatter(end)
-            const suffixMonth = startMonth === endMonth ? '' : endMonth
+            const suffixMonth = startMonth === endMonth ? startMonth : endMonth
 
             const startYear = start.year
             const endYear = end.year
-            const suffixYear = startYear === endYear ? '' : endYear
+            const suffixYear = startYear === endYear ? startYear : endYear
 
-            const startDay = start.day + this.nth(start.day)
-            const endDay = end.day + this.nth(end.day)
+            const startDay = start.day 
+            const endDay = end.day
 
             switch (this.type) {
                 case 'month':
-                    return `${startMonth} ${startYear}`
+                    return `${months[startMonth]} ${startYear}`
                 case 'week':
-                case '4day':
-                    return `${startMonth} ${startDay} ${startYear} - ${suffixMonth} ${endDay} ${suffixYear}`
+                    return `${startDay} ${months[startMonth]} ${startYear} - ${endDay} ${months[suffixMonth]} ${suffixYear}`
                 case 'day':
-                    return `${startMonth} ${startDay} ${startYear}`
+                    return `${startDay} ${months[startMonth]} ${startYear}`
             }
             return ''
         },
@@ -157,20 +166,13 @@ export default {
             this.$refs.calendar.next()
         },
         showEvent({ nativeEvent, event }) {
-            const open = () => {
-                this.selectedEvent = event
-                this.selectedElement = nativeEvent.target
-                setTimeout(() => this.selectedOpen = true, 10)
-            }
-
-            if (this.selectedOpen) {
-                this.selectedOpen = false
-                setTimeout(open, 10)
-            } else {
-                open()
-            }
+            this.selectedEvent = event;
+            this.modalVisible = true;
 
             nativeEvent.stopPropagation()
+        },
+        closeDialog() {
+            this.modalVisible = false;
         },
         updateRange({ start, end }) {
             const events = []
@@ -198,11 +200,7 @@ export default {
             this.start = start
             this.end = end
             this.events = events
-        },
-        nth(d) {
-            return d > 3 && d < 21
-                ? 'th'
-                : ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'][d % 10]
+            console.log("events", this.events);
         },
         rnd(a, b) {
             return Math.floor((b - a + 1) * Math.random()) + a
@@ -215,4 +213,10 @@ export default {
     },
 }
 </script>
+
+<style lang="scss" scoped>
+    .calendar-conatainer {
+        display: flex;
+    }
+</style>
   
