@@ -2,6 +2,19 @@
     <div class="calendar-container">
         <v-app>
             <v-row class="fill-height mx-0">
+                <v-col cols="2">
+                    <v-sheet class="date-picker-container">
+                        <v-date-picker 
+                            v-model="selectedDate"
+                            @input="onDateChange"
+                            flat
+                            full-width
+                            no-title
+                            class="custom-date-picker"
+                        />
+                    </v-sheet>
+                </v-col>
+                <v-divider vertical></v-divider> 
                 <v-col>
                     <v-sheet height="64">
                         <v-toolbar flat color="white">
@@ -32,7 +45,10 @@
                                 </v-list>
                             </v-menu>
                             <v-spacer></v-spacer>
-                            <button class="add-button" @click="showAddEvent">
+                            <button class="search-button">
+                                <v-icon>mdi-magnify</v-icon>
+                            </button>
+                            <button class="add-button" @click="showAddEvent" v-if="activeTab === 'meu'">
                                 <v-icon left>mdi-plus</v-icon>
                                 <span>Adicionar</span>
                             </button>
@@ -99,6 +115,7 @@ import ModalShareContent from './components/ModalShareContent/ModalShareContent.
 import ModalAddEvent from './components/ModalAddEvent/ModalAddEvent.vue';
 import { months } from '@/assets/months';
 import concursos from '../../../concursos.json'
+import meusConcursos from '../../../meus_concursos.json';
 
 export default {
     name: 'pd-calendar',
@@ -126,6 +143,7 @@ export default {
         selectedEvent: {},
         selectedElement: null,
         selectedOpen: false,
+        selectedDate: null,
         modalType: null,
         modalVisible: false,
         modalAddEvent: false,
@@ -169,7 +187,9 @@ export default {
     mounted() {
         this.$refs.calendar.checkChange();
 
-        this.events = concursos.map(event => ({
+        let tipoConcurso = this.activeTab === "todas" ? concursos : meusConcursos;
+
+        this.events = tipoConcurso.map(event => ({
             name: event.name,
             start: event.start,
             color: event.color,
@@ -235,6 +255,12 @@ export default {
         display: flex;
     }
 
+    .custom-date-picker {
+        background-color: transparent !important; 
+        box-shadow: none !important; 
+        border: none; 
+    }
+
     .custom-transparent-btn {
         background: transparent;
         color: inherit;
@@ -257,6 +283,20 @@ export default {
         transition: background-color 0.3s ease;
     }
 
+    .search-button {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        border-radius: 1000px;
+        border: 2px solid #F55B1F;
+        background: #FFF;
+        margin-right: 10px;
+
+        .v-icon {
+            color: #F55B1F;
+        }
+    }
+
     .add-button {
         display: flex;
         padding: 8px 20px;
@@ -273,7 +313,7 @@ export default {
 
         span {
             color: #F55B1F;
-            color: var(--color-extended-brand-primary-main, #F55B1F);
+            color: #F55B1F;
             font-family: Poppins;
             font-size: 16px;
             font-style: normal;
