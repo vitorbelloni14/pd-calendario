@@ -3,9 +3,17 @@ from bs4 import BeautifulSoup
 import json
 import re
 
+from datetime import datetime
+
 URL = "https://www.pciconcursos.com.br/concursos/"
 
 concursos = []
+
+
+def format_date(date_str):
+    if date_str is not "":
+        formatted_date = datetime.strptime(date_str, "%d/%m/%Y").strftime("%Y-%m-%d")
+        return formatted_date
 
 
 def scrape_concursos(source):
@@ -23,9 +31,12 @@ def scrape_concursos(source):
     for obj in concursos_tag.find_all(class_="ca"):
         name = obj.find("a").text.strip()
         link = obj.find("a", href=True)["href"]
-        start = "".join(re.findall("\d+/\d+/\d+", str(obj.find(class_="ce"))))
+        raw_date = "".join(re.findall("\d+/\d+/\d+", str(obj.find(class_="ce"))))
+        start = format_date(raw_date)
 
-        concursos.append({"name": name, "link": link, "start": start})
+        concursos.append(
+            {"name": name, "link": link, "start": start, "color": "#C5A7F5"}
+        )
 
     return concursos
 
