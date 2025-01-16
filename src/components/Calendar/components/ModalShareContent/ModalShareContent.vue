@@ -36,10 +36,6 @@
                         <img src="./assets/add-check.svg" alt="add-check"/>
                         <a class="recomendation-links" href="passeidireto.com">Materiais Recomendados</a>
                     </div>
-                    <div class="links">
-                        <img src="./assets/book.svg" alt="book"/>
-                        <a class="recomendation-links" href="passeidireto.com">Questões Recomendadas</a>
-                    </div>
                 </div>
             </div>
             <hr class="divider">
@@ -50,15 +46,15 @@
                 </div>
                 <div class="share-icons">
                     <div class="share-icon">
-                        <div class="icon">
-                        <img src="./assets/whatsapp.svg" alt="whatsapp" class="icon-image" />
-                        </div>
+                        <button class="icon">
+                            <img src="./assets/whatsapp.svg" alt="whatsapp" class="icon-image" />
+                        </button>
                         <span class="icon-text">WhatsApp</span>
                     </div>
                     <div class="share-icon">
-                        <div class="icon">
-                        <img src="./assets/email.svg" alt="email" class="icon-image" />
-                        </div>
+                        <button class="icon">
+                            <img src="./assets/email.svg" alt="email" class="icon-image" />
+                        </button>
                         <span class="icon-text">E-mail</span>
                     </div>
                 </div>
