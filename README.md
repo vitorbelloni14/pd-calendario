@@ -1,27 +1,29 @@
-# pd-calendario
+# PD-CALENDARIO
 
 ## Project setup
 
+Para rodar o projeto localmente, é preciso instalar o node, caso já possua, verificar a versão e se preciso, alterar com nvm para node 20. 
+
+Após bastar rodar:
 ```
 npm install
 ```
-
-### Compiles and hot-reloads for development
-
+e em seguida para subir o servidor local, rodar:
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+## Testing
 
+O projesto já está com configurado para rodar testes unitários com Jest, e para rodar os testes que já existem, bastar rodar:
 ```
-npm run build
+npm run test:unit
 ```
+E para rodar somente um teste específico é só adicionar o caminho relativo do arquivo de teste ao scrip acima.
 
-### Lints and fixes files
-
+Para verificar a cobertura dos testes, basta rodar:
 ```
-npm run lint
+npm run test:coverage
 ```
 
 ### Customize configuration
