@@ -1,8 +1,17 @@
 <template>
     <div>
     <div class="header">
-        <h1>Calendário de provas divulgados</h1>
-        <span>Calendário colaborativo com as datas das principais provas do ano.</span>
+        <div class="header-information">
+            <div class="information-title">
+                <h1>Calendário de provas divulgados</h1>
+                <span>Calendário colaborativo com as datas das principais provas do ano.</span>
+            </div>
+            <div class="information-action">
+                <button class="share-button" @click="openShareModal">
+                    <img src="./assets/share.svg" alt="share"/>
+                </button>
+            </div>
+        </div>
         <div class="tabs">
           <button
             class="tab-button"
@@ -27,21 +36,36 @@
           <Calendar :activeTab="selectedTab"/>
         </div>
     </div>
+    <ModalShareContent
+        :modalVisible="modalVisible"
+        @closeModal="closeModal" 
+    />
 </div>
 </template>
   
   <script>
   import Calendar from '../components/Calendar/Calendar.vue';
+  import ModalShareContent from '../components/ModalShareCalendar/ModalShareCalendar.vue';
   
   export default {
     name: 'MainView',
     components: {
       Calendar,
+      ModalShareContent
     },
     data() {
       return {
         selectedTab: 'todas',
+        modalVisible: false,
       };
+    },
+    methods: {
+        openShareModal() {
+            this.modalVisible = true;
+        },
+        closeModal() {
+            this.modalVisible = false;
+        },
     },
   };
 </script>
@@ -55,7 +79,28 @@
         align-self: stretch;
         padding: 24px 38px 2px 90px;
     }
-    
+
+    .header-information {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .share-button {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        border-radius: 1000px;
+        border: 2px solid #F55B1F;
+        background: #FFF;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
     .tabs {
         display: flex;
         gap: 20px;
