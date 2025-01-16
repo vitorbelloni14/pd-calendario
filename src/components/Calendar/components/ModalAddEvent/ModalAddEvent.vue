@@ -63,55 +63,55 @@
 </template>
 
 <script>
-export default {
-    name: 'ModalAddEvent',
-    props: {
-        modalVisible: Boolean,
-    },
-    data() {
-        return {
-            localModalVisible: this.modalVisible,
-            snackbarVisible: false,
-            titulo: '',
-            data: '',
-            universidade: '',
-            universidades: ['Estácio', 'UNIASSELVI', 'UNINTER', 'UNIP', 'UNOPAR'],  
-        };
-    },
-    computed: {
-        isFormValid() {
-            return this.titulo && this.data;
-        }
-    },
-    watch: {
-        modalVisible(newValue) {
-            this.localModalVisible = newValue;
+    export default {
+        name: 'ModalAddEvent',
+        props: {
+            modalVisible: Boolean,
         },
-        localModalVisible(newValue) {
-            if (!newValue) {
-                this.$emit('closeModal');
+        data() {
+            return {
+                localModalVisible: this.modalVisible,
+                snackbarVisible: false,
+                titulo: '',
+                data: '',
+                universidade: '',
+                universidades: ['Estácio', 'UNIASSELVI', 'UNINTER', 'UNIP', 'UNOPAR'],  
+            };
+        },
+        computed: {
+            isFormValid() {
+                return this.titulo && this.data;
             }
         },
-    },
-    methods: {
-        closeModal() {
-            this.localModalVisible = false;
-            this.titulo = '';
-            this.data = '';
-            this.universidade = '';
+        watch: {
+            modalVisible(newValue) {
+                this.localModalVisible = newValue;
+            },
+            localModalVisible(newValue) {
+                if (!newValue) {
+                    this.$emit('closeModal');
+                }
+            },
         },
-        maskDate() {
-            let value = this.data.replace(/\D/g, ''); 
-            if (value.length > 2) {
-                value = value.substring(0, 2) + '/' + value.substring(2);
-            }
-            if (value.length > 5) {
-                value = value.substring(0, 5) + '/' + value.substring(5, 9);
-            }
-            this.data = value.substring(0, 10); 
+        methods: {
+            closeModal() {
+                this.localModalVisible = false;
+                this.titulo = '';
+                this.data = '';
+                this.universidade = '';
+            },
+            maskDate() {
+                let value = this.data.replace(/\D/g, ''); 
+                if (value.length > 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2);
+                }
+                if (value.length > 5) {
+                    value = value.substring(0, 5) + '/' + value.substring(5, 9);
+                }
+                this.data = value.substring(0, 10); 
+            },
         },
-    },
-}
+    }
 </script>
 
 <style lang="scss" scoped> 

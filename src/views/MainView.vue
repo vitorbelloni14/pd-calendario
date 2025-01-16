@@ -36,22 +36,22 @@
           <Calendar :activeTab="selectedTab"/>
         </div>
     </div>
-    <ModalShareContent
+    <modal-share-calendar
         :modalVisible="modalVisible"
         @closeModal="closeModal" 
     />
 </div>
 </template>
   
-  <script>
+<script>
   import Calendar from '../components/Calendar/Calendar.vue';
-  import ModalShareContent from '../components/ModalShareCalendar/ModalShareCalendar.vue';
+  import ModalShareCalendar from '../components/ModalShareCalendar/ModalShareCalendar.vue';
   
   export default {
     name: 'MainView',
     components: {
       Calendar,
-      ModalShareContent
+      ModalShareCalendar
     },
     data() {
       return {

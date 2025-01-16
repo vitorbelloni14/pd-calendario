@@ -64,43 +64,37 @@
 </template>
 
 <script>
-export default {
-    name: 'ModalShare',
-    props: {
-        modalVisible: Boolean,
-        selectedEvent: Object,
-    },
-    data() {
-        return {
-            localModalVisible: this.modalVisible,
-        };
-    },
-    watch: {
-        modalVisible(newValue) {
-            this.localModalVisible = newValue;
+    export default {
+        name: 'ModalShareContent',
+        props: {
+            modalVisible: Boolean,
+            selectedEvent: Object,
         },
-        localModalVisible(newValue) {
-            if (!newValue) {
-                this.$emit('closeModal');
+        data() {
+            return {
+                localModalVisible: this.modalVisible,
+            };
+        },
+        watch: {
+            modalVisible(newValue) {
+                this.localModalVisible = newValue;
+            },
+            localModalVisible(newValue) {
+                if (!newValue) {
+                    this.$emit('closeModal');
+                }
+            },
+        },
+        methods: {
+            closeModal() {
+                this.localModalVisible = false;
+            },
+            formatDate(date) {
+                const [year, month, day] = date.split('-');  
+                return `${day}/${month}/${year.slice(2)}`; 
             }
         },
-    },
-    methods: {
-        closeModal() {
-            this.localModalVisible = false;
-        },
-        formatDate(date) {
-            const d = new Date(date);
-            const day = String(d.getDate()).padStart(2, '0');
-            const month = String(d.getMonth() + 1).padStart(2, '0'); 
-            const year = String(d.getFullYear()).slice(2); 
-            const hours = String(d.getHours()).padStart(2, '0');
-            const minutes = String(d.getMinutes()).padStart(2, '0');
-            
-            return `${day}/${month}/${year} - ${hours}:${minutes}`;
-        },
-    },
-}
+    }
 </script>
 
 <style lang="scss" scoped> 
